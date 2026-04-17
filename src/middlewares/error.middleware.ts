@@ -16,9 +16,11 @@ export const errorHandler = (
 
   
   if (err.statusCode === 502 && err.api) {
+    console.error(`${err.api} returned an invalid response`, err);
+
     return res.status(502).json({
       status: 'error',
-      message: `${err.api} returned an invalid response`,
+      message: "Unable to process request at this time",
     });
   }
 
