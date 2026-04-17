@@ -8,22 +8,112 @@ Backend Wizards Stage 1 — Express + TypeScript + PostgreSQL
 - **Database**: PostgreSQL via Prisma ORM
 - **ID generation**: UUID v7
 
-## Setup
+## Local Setup & Running
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** v18 or higher ([Download](https://nodejs.org/))
+- **npm** (comes with Node.js)
+- **PostgreSQL** v12 or higher ([Download](https://www.postgresql.org/download/) or use Docker)
+
+### Step 1: Clone the Repository
 
 ```bash
-# 1. Install dependencies
+git clone https://github.com/amiabl-programr/hng14-stage1-data-persistence-and-api-design.git
+cd hng14-stage1-data-persistence-and-api-design
+```
+
+### Step 2: Install Dependencies
+
+```bash
 npm install
+```
 
-# 2. Copy env file and fill in your DATABASE_URL
+### Step 3: Set Up Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
 cp .env.example .env
+```
 
-# 3. Push schema to DB and generate Prisma client
-npm run db:push
-npm run db:generate
+Then open `.env` and configure the following:
 
-# 4. Run dev server
+```env
+# Database connection string
+# Format: postgresql://user:password@localhost:5432/database_name
+DATABASE_URL=postgresql://postgres:password@localhost:5432/profiles_db
+
+# Server port (optional, defaults to 3000)
+PORT=3000
+```
+
+### Step 4: Set Up the Database
+
+Generate the Prisma client and run migrations:
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+```
+
+This will:
+- Generate the Prisma client
+- Create the database schema
+- Set up the profiles table
+
+### Step 5: Run the Development Server
+
+```bash
 npm run dev
 ```
+
+The server will start at `http://localhost:3000` and watch for file changes.
+
+You should see output like:
+```
+Server listening on port 3000
+```
+
+### Verify It's Working
+
+Test the API with a curl request:
+
+```bash
+curl http://localhost:3000/api/profiles
+```
+
+You should get a response with an empty profiles array.
+
+### Additional Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build the TypeScript project for production |
+| `npm start` | Run the compiled production build |
+| `npm run prisma:studio` | Open Prisma Studio to view/manage database data |
+| `npm run lint` | Run ESLint to check code quality |
+
+### Troubleshooting
+
+**Error: `connect ECONNREFUSED 127.0.0.1:5432`**
+- PostgreSQL is not running. Start the PostgreSQL service and ensure it's listening on port 5432.
+
+**Error: `database "profiles_db" does not exist`**
+- Create the database: `psql -U postgres -c "CREATE DATABASE profiles_db;"`
+
+**Error: `prisma generate` fails**
+- Ensure your `.env` file has a valid `DATABASE_URL`
+- Try deleting `node_modules` and running `npm install` again
+
+**Port 3000 already in use**
+- Change the `PORT` in your `.env` file to another port (e.g., `3001`)
+- Or kill the process using port 3000
+
+**Schema changes not reflecting**
+- Run `npm run prisma:migrate` to apply new migrations
+- Run `npm run prisma:studio` to view and verify database state
 
 
 ## Endpoints
